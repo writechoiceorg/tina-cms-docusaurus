@@ -28,10 +28,11 @@ export default defineConfig({
   // See docs on content modeling for more info on how to setup new content models: https://tina.io/docs/r/content-modelling-collections/
   schema: {
     collections: [
+      // 1. Public Documentation Collection
       {
-        name: "docs",
-        label: "Docs",
-        path: "docs",
+        name: "public",
+        label: "Public Docs",
+        path: "docs/public", // <--- TELLS TINA WHERE TO LOOK
         format: "mdx",
         fields: [
           {
@@ -42,20 +43,26 @@ export default defineConfig({
             required: true,
           },
           {
-            type: "string",
-            name: "description",
-            label: "Description",
+            type: "rich-text",
+            name: "body",
+            label: "Body",
+            isBody: true,
           },
+        ],
+      },
+      // 2. Beta Documentation Collection
+      {
+        name: "beta",
+        label: "Beta Docs",
+        path: "docs/beta",
+        format: "mdx",
+        fields: [
           {
             type: "string",
-            name: "slug",
-            label: "Slug",
-          },
-          {
-            type: "string",
-            name: "tags",
-            label: "Tags",
-            list: true,
+            name: "title",
+            label: "Title",
+            isTitle: true,
+            required: true,
           },
           {
             type: "rich-text",
@@ -65,6 +72,29 @@ export default defineConfig({
           },
         ],
       },
+      // 3. Enterprise Documentation Collection
+      {
+        name: "enterprise",
+        label: "Enterprise Docs",
+        path: "docs/enterprise",
+        format: "mdx",
+        fields: [
+          {
+            type: "string",
+            name: "title",
+            label: "Title",
+            isTitle: true,
+            required: true,
+          },
+          {
+            type: "rich-text",
+            name: "body",
+            label: "Body",
+            isBody: true,
+          },
+        ],
+      },
+      // 4. Blog (Kept this as is)
       {
         name: "blog",
         label: "Blog",
@@ -78,23 +108,11 @@ export default defineConfig({
             isTitle: true,
             required: true,
           },
-           {
+          {
             type: "datetime",
             name: "date",
             label: "Date",
             required: true,
-          },
-          {
-            type: "string",
-            name: "authors",
-            label: "Authors",
-            list: true,
-          },
-          {
-            type: "string",
-            name: "tags",
-            label: "Tags",
-            list: true,
           },
           {
             type: "rich-text",
@@ -106,4 +124,3 @@ export default defineConfig({
       },
     ],
   },
-});
