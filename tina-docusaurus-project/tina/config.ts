@@ -32,7 +32,7 @@ export default defineConfig({
       {
         name: "public",
         label: "Public Docs",
-        path: "docs/public", // <--- TELLS TINA WHERE TO LOOK
+        path: "docs/public",
         format: "mdx",
         fields: [
           {
@@ -94,7 +94,7 @@ export default defineConfig({
           },
         ],
       },
-      // 4. Blog (Kept this as is)
+      // 4. Blog Collection
       {
         name: "blog",
         label: "Blog",
@@ -115,6 +115,18 @@ export default defineConfig({
             required: true,
           },
           {
+            type: "string",
+            name: "authors",
+            label: "Authors",
+            list: true,
+          },
+          {
+            type: "string",
+            name: "tags",
+            label: "Tags",
+            list: true,
+          },
+          {
             type: "rich-text",
             name: "body",
             label: "Body",
@@ -124,3 +136,4 @@ export default defineConfig({
       },
     ],
   },
+});

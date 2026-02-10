@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "tinacms dev -c 'docusaurus start'",
+    "dev": "tinacms dev -c \"docusaurus start\"",
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",
