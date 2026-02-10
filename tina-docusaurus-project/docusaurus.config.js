@@ -50,7 +50,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+            "https://github.com/writechoiceorg/tina-cms-docusaurus/tree/main/tina-docusaurus-project",
         },
         blog: {
           showReadingTime: true,
@@ -89,7 +89,6 @@ const config = {
           src: "img/logo.svg",
         },
         items: [
-
           // REPLACED the 'Tutorial' navbar block with these:
           {
             type: "docSidebar",
