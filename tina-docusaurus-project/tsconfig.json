@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "moduleResolution": "bundler"
+  },
+  "include": ["middleware.js"],
+  "exclude": ["node_modules", "**/*.docusaurus", "**/*.config.js"]
+}
