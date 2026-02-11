@@ -3,7 +3,6 @@ export default function middleware(request) {
   const url = new URL(request.url);
 
   if (url.pathname.startsWith('/admin')) {
-      // Allow static assets and non-HTML requests to pass through so Tina can load JS/CSS/JSON
       const accept = request.headers.get('accept') || '';
       if (!accept.includes('text/html')) {
         return;
@@ -32,7 +31,6 @@ export default function middleware(request) {
   }
 }
 
-// Configuração
 export const config = {
   matcher: ['/admin/:path*'],
 };

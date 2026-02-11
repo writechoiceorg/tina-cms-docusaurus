@@ -39,3 +39,11 @@ GIT_USER=<Your GitHub username> yarn deploy
 ```
 
 If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+
+
+
+
+## Notes
+credentials for admin are "admin" "password123"
+* Fixed Run script, use `vercel dev` to start project
+tried next.js but its not compatible with the middleware, some kind of conflict with vercel package.
