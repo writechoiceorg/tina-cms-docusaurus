@@ -47,3 +47,10 @@ If you are using GitHub pages for hosting, this command is a convenient way to b
 credentials for admin are "admin" "password123"
 * Fixed Run script, use `vercel dev` to start project
 tried next.js but its not compatible with the middleware, some kind of conflict with vercel package.
+
+create 403 page
+
+improve login page
+
+Oauth / azure iam
+
