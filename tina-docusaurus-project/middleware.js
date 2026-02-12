@@ -57,8 +57,16 @@ export default async function middleware(request) {
     if (!verifyRes.ok) return Response.redirect(`http://localhost:4002/login?next=${encodeURIComponent(request.url)}`, 302);
     const payload = await verifyRes.json();
     const roles = payload.user.roles || [];
+    // if (!roles.includes(requiredRole)) {
+    //   return new Response('Forbidden', { status: 403 });
+    // }
+    // New Forbidden Page
     if (!roles.includes(requiredRole)) {
-      return new Response('Forbidden', { status: 403 });
+      // Redirect to the branded "Forbidden" page
+      // instead of showing raw text.
+      const url = new URL(request.url);
+      url.pathname = "/forbidden";
+      return Response.redirect(url, 302);
     }
     return; // allow
   } catch (e) {
