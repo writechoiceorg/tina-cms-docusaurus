@@ -18,6 +18,9 @@ export default async function middleware(request) {
     { prefix: '/admin', role: 'admin' },
   ];
 
+  // allow the auth callback route to be public so it can set cookie for main domain
+  if (pathname === '/_auth/callback' || pathname.startsWith('/_auth/callback')) return;
+
   function requiredRoleFor(path) {
     for (const r of ROLE_MAP) {
       // match exact prefix or any subpath under it

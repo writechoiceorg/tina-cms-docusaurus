@@ -21,14 +21,14 @@
   <body>
     <div class="card" role="main">
       <h1>🔐 Login</h1>
-      <p class="lead">Entre com sua conta de demonstração para acessar as áreas restritas.</p>
+      <p class="lead">Sign in with a demo account to access restricted areas.</p>
       <form id="f">
         <input name="username" type="text" placeholder="Username" value="betatester" />
         <input name="password" type="password" placeholder="Password" value="bt123" />
         <div class="row">
-          <button class="button" type="submit">Entrar</button>
+          <button class="button" type="submit">Sign in</button>
         </div>
-        <div class="note">Usuário demo: <strong>betatester</strong> / senha: <strong>bt123</strong></div>
+        <div class="note">Demo account: <strong>betatester</strong> / password: <strong>bt123</strong></div>
       </form>
     </div>
 
@@ -41,10 +41,12 @@
         const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         const json = await res.json();
         if (json.token) {
+          // store in localStorage for the auth server context (optional)
           localStorage.setItem('demo_jwt', json.token);
-          try { document.cookie = 'demo_jwt=' + encodeURIComponent(json.token) + '; path=/; domain=localhost'; } catch (e) {}
           const next = new URLSearchParams(location.search).get('next') || '/';
-          location.href = next;
+          // redirect to the main site callback so the cookie can be set for localhost
+          const callback = 'http://localhost:3000/auth/callback?token=' + encodeURIComponent(json.token) + '&next=' + encodeURIComponent(next);
+          location.href = callback;
         } else {
           alert(json.error || JSON.stringify(json));
         }
