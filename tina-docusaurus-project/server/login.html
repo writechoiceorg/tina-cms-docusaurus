@@ -1,16 +1,37 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <title>Demo Login</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login — Demo</title>
+    <style>
+      :root{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;}
+      body{margin:0;background:#f7fafc;color:#0f172a;display:flex;align-items:center;justify-content:center;height:100vh}
+      .card{background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(12,15,24,0.08);max-width:420px;width:94%;padding:32px;text-align:center}
+      h1{margin:0 0 8px;font-size:28px}
+      p.lead{margin:0 0 20px;color:#475569}
+      form{display:grid;gap:12px}
+      input[type=text],input[type=password]{width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px}
+      .row{display:flex;gap:8px}
+      .button{display:inline-block;padding:10px 16px;border-radius:8px;border:0;background:#0ea5a4;color:white;font-weight:600;cursor:pointer}
+      .muted{color:#64748b;font-size:13px;margin-top:8px}
+      .note{font-size:13px;color:#64748b;margin-top:12px}
+    </style>
   </head>
   <body>
-    <h1>Login (Demo)</h1>
-    <form id="f">
-      <label>Username: <input name="username" value="betatester"/></label><br/>
-      <label>Password: <input name="password" type="password" value="bt123"/></label><br/>
-      <button>Login</button>
-    </form>
+    <div class="card" role="main">
+      <h1>🔐 Login</h1>
+      <p class="lead">Entre com sua conta de demonstração para acessar as áreas restritas.</p>
+      <form id="f">
+        <input name="username" type="text" placeholder="Username" value="betatester" />
+        <input name="password" type="password" placeholder="Password" value="bt123" />
+        <div class="row">
+          <button class="button" type="submit">Entrar</button>
+        </div>
+        <div class="note">Usuário demo: <strong>betatester</strong> / senha: <strong>bt123</strong></div>
+      </form>
+    </div>
+
     <script>
       const form = document.getElementById('f');
       form.addEventListener('submit', async (e) => {
@@ -20,15 +41,12 @@
         const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         const json = await res.json();
         if (json.token) {
-          // store token in localStorage (demo) and also set cookie for domain localhost
           localStorage.setItem('demo_jwt', json.token);
-          try {
-            document.cookie = 'demo_jwt=' + encodeURIComponent(json.token) + '; path=/; domain=localhost';
-          } catch (e) {}
+          try { document.cookie = 'demo_jwt=' + encodeURIComponent(json.token) + '; path=/; domain=localhost'; } catch (e) {}
           const next = new URLSearchParams(location.search).get('next') || '/';
           location.href = next;
         } else {
-          alert(JSON.stringify(json));
+          alert(json.error || JSON.stringify(json));
         }
       });
     </script>
