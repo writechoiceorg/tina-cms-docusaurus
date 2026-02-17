@@ -31,6 +31,13 @@ db.prepare(
   )`
 ).run();
 
+db.prepare(
+  `CREATE TABLE IF NOT EXISTS revoked_tokens (
+    token TEXT PRIMARY KEY,
+    revoked_at INTEGER
+  )`
+).run();
+
 function seed() {
   const exists = db.prepare('SELECT COUNT(*) as c FROM users').get().c;
   if (exists === 0) {
@@ -54,9 +61,21 @@ function signToken(user) {
 
 function verifyToken(token) {
   try {
+    // check revocation list
+    const revoked = db.prepare('SELECT token FROM revoked_tokens WHERE token = ?').get(token);
+    if (revoked) return null;
     return jwt.verify(token, JWT_SECRET);
   } catch (e) {
     return null;
+  }
+}
+
+function revokeToken(token) {
+  try {
+    db.prepare('INSERT OR REPLACE INTO revoked_tokens (token, revoked_at) VALUES (?, ?)').run(token, Date.now());
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 
@@ -132,6 +151,23 @@ app.delete('/api/users/:id', requireAdmin, (req, res) => {
 // simple login page for demo
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+// Revoke token (logout) - accepts token in Authorization header, cookie or body
+app.post('/api/logout', (req, res) => {
+  const auth = req.headers['authorization'] || '';
+  let token = null;
+  if (auth.startsWith('Bearer ')) token = auth.slice(7);
+  if (!token && req.body && req.body.token) token = req.body.token;
+  if (!token) {
+    const cookie = req.headers.cookie || '';
+    const m = cookie.match(/(?:^|; )demo_jwt=([^;]+)/);
+    if (m) token = decodeURIComponent(m[1]);
+  }
+  if (!token) return res.status(400).json({ error: 'no token provided' });
+  const ok = revokeToken(token);
+  if (!ok) return res.status(500).json({ error: 'failed to revoke' });
+  res.json({ ok: true });
 });
 
 app.get('/', (req, res) => res.send('Auth server running'));
