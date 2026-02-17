@@ -31,6 +31,20 @@ db.prepare(
   )`
 ).run();
 
+// add last_logout_at column if missing (stores ms since epoch)
+try {
+  db.prepare("ALTER TABLE users ADD COLUMN last_logout_at INTEGER").run();
+} catch (e) {
+  // ignore if column exists
+}
+
+db.prepare(
+  `CREATE TABLE IF NOT EXISTS revoked_tokens (
+    token TEXT PRIMARY KEY,
+    revoked_at INTEGER
+  )`
+).run();
+
 db.prepare(
   `CREATE TABLE IF NOT EXISTS revoked_tokens (
     token TEXT PRIMARY KEY,
@@ -64,7 +78,17 @@ function verifyToken(token) {
     // check revocation list
     const revoked = db.prepare('SELECT token FROM revoked_tokens WHERE token = ?').get(token);
     if (revoked) return null;
-    return jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET);
+    // check user-level logout timestamp to invalidate previously issued tokens
+    if (payload && payload.username) {
+      const user = db.prepare('SELECT last_logout_at FROM users WHERE username = ?').get(payload.username);
+      if (user && user.last_logout_at) {
+        // payload.iat is in seconds
+        const issuedAtMs = (payload.iat || 0) * 1000;
+        if (issuedAtMs < user.last_logout_at) return null;
+      }
+    }
+    return payload;
   } catch (e) {
     return null;
   }
@@ -78,6 +102,18 @@ function revokeToken(token) {
     return false;
   }
 }
+
+// Admin: revoke all sessions for a user by updating last_logout_at
+app.post('/api/admin/revoke-user-sessions', requireAdmin, (req, res) => {
+  const { username } = req.body || {};
+  if (!username) return res.status(400).json({ error: 'username required' });
+  try {
+    db.prepare('UPDATE users SET last_logout_at = ? WHERE username = ?').run(Date.now(), username);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: String(e) });
+  }
+});
 
 // Routes
 app.post('/api/login', (req, res) => {
