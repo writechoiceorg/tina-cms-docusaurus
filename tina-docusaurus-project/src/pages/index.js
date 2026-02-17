@@ -7,49 +7,65 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
 import styles from './index.module.css';
 
-/* src/pages/index.js */
-// ... imports remain the same
-
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
-        </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        
-        {/* Tech Lead Update: Separated entry points for your 3 tiers */}
-        <div className={styles.buttons} style={{display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px'}}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/public/intro"> {/* Assumes you have docs/public/intro.md */}
-            Public Docs 🌍
-          </Link>
-          <Link
-            className="button button--warning button--lg" // distinct color for beta
-            to="/docs/beta/intro">
-            Beta Access 🚧
-          </Link>
-          <Link
-            className="button button--info button--lg" // distinct color for enterprise
-            to="/docs/enterprise/intro">
-            Enterprise 🏢
-          </Link>
+    <>
+      <div className="hero-section">
+        <div className="hero-content">
+          <img src="/img/dark.svg" alt="Bankuity Logo" className="hero-logo" />
+          <p className="hero-tagline">{siteConfig.tagline}</p>
         </div>
       </div>
-    </header>
+      <div className="cards-container">
+      {/* Card 1: What is Bankuity? */}
+      <a href="/guides/overview" className="card-link">
+        <div className="card-image-wrapper">
+          <img noZoom src="/bankuity_logo/home-1.svg" />
+        </div>
+        <div className="card-content">
+          <h3 className="card-title">What is Bankuity?</h3>
+          <p className="card-description">
+            Discover how our behavioral analytics and transaction enrichment provide deep insights into financial stability.
+          </p>
+        </div>
+      </a>
+
+      {/* Card 2: Get Started */}
+      <a href="/guides/generate-analysis" className="card-link">
+        <div className="card-image-wrapper">
+          <img noZoom src="/bankuity_logo/home-2.svg" />
+        </div>
+        <div className="card-content">
+          <h3 className="card-title">Get Started</h3>
+          <p className="card-description">
+            Learn how to authenticate into our API and perform your first analysis request.
+          </p>
+        </div>
+      </a>
+
+      {/* Card 3: API Reference */}
+      <a href="/api-reference/introduction" className="card-link">
+        <div className="card-image-wrapper">
+          <img noZoom src="/bankuity_logo/home-3.svg" />
+        </div>
+        <div className="card-content">
+          <h3 className="card-title">API Reference</h3>
+          <p className="card-description">
+            Explore endpoints for income analysis, bank account verification, and automated lending recommendations.
+          </p>
+        </div>
+      </a>
+    </div>
+    </>
   );
 }
-
-// ... rest of the file remains the same
 
 export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
+      title={`${siteConfig.title}`}
       description="Description will go into a meta tag in <head />">
       <HomepageHeader />
       <main>
@@ -58,3 +74,4 @@ export default function Home() {
     </Layout>
   );
 }
+
