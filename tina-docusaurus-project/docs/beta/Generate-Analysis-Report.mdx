@@ -1,0 +1,46 @@
+---
+title: Generate Analysis Report
+---
+
+The Bankuity Income Analysis service provides a RESTful interface for performing financial evaluations. The API goes beyond simple data retrieval to identify and verify income sources, evaluate stability, and derive real-time risk scores from bank statement data.
+
+This tutorial guides you through the process of requesting Bankuity to fetch raw data from your Instant Bank Verification (IBV) provider, calculate complex financial patterns, and return a production-ready analysis report.
+
+## Pre-requisites
+
+Before getting started, ensure you have the following:
+
+* A valid `requestCode` from your integrated IBV provider.
+* Your API credentials (`Ocp-Apim-Subscription-Key` and `Authorization key`) securely stored on your backend.
+
+## Execute the Analysis Request
+
+To initiate and retrieve an analysis you need to send a **GET** request to the [`/v2/analysis/income`](/api-reference/apiiachirp/request-income-analysis) endpoint, sending the `requestCode` and `ProviderName` of your IBV provider as query parameters.
+
+The code block below shows an example request:
+
+```cURL
+curl --ssl-no-revoke \
+  --location --request GET \
+  "https://apisbx.bankuity.com/incomeanalyzer-apiv2/v2/analysis/income?requestCode=XXX&ibvProviderName=Chirp" \
+  -H "Ocp-Apim-Subscription-Key: {YOUR_SUBSCRIPTION_KEY}" \
+  -H "Authorization: {YOUR_API_KEY}" \
+  -H "Content-Type: application/json"
+```
+
+The following table describe the query parameters used in the request:
+
+| Parameter         | Type     | Description                                                                |
+| :---------------- | :------- | :------------------------------------------------------------------------- |
+| `requestCode`     | `string` | Your provider-specific identifier for this specific client request.        |
+| `ibvProviderName` | `string` | The name of the integrated IBV provider from which data should be sourced. |
+
+The endpoint checks the `requestCode` with the IBV provider. If new data is available, a new snapshot is analyzed, otherwise, stored results are returned.
+
+### Response
+
+Upon a successful 200 OK response, you will receive a `GetProcessingResultsResponse` object.
+
+* `requestId`: This is a unique, Bankuity-generated identifier for this specific analysis instance.
+
+You must store the `requestId` to access the analysis results later via the [`/v2/analysis/income/result`](/api-reference/totality/get-analyzing-result-for-customer) endpoint without re-triggering provider data fetching. The response includes detailed account info, active monthly income, risk scores, and suggested loan amounts.

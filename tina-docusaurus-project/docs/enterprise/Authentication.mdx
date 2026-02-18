@@ -1,0 +1,49 @@
+---
+title: Authentication
+---
+
+The Bankuity API uses a dual-key authentication mechanism to secure server-to-server integrations. This approach ensures both identity verification and proper subscription routing for every request. Because the API provides access to sensitive financial analysis and bank statement data, all authentication must be handled strictly on your backend to prevent exposing credentials in client-side code.
+
+## Pre-requisites
+
+Before getting started, ensure you have an IBV Provider configured. The Bankuity Income Analyzer does not collect raw bank data directly, it relies on an Instant Bank Verification (IBV) provider. You need to choose an integrated IBV provider and ensure that Bankuity has the required permissions to retrieve your client data.
+
+## Authentication Steps
+
+Follow the steps below to configure your credentials and verify your connection to the Bankuity API.
+
+### 1. Obtain Your API Keys
+
+Before you can interact with the API, your organization will receive two distinct keys from the Bankuity onboarding team:
+
+* Subscription Key (`Ocp-Apim-Subscription-Key`): A unique identifier for your organization used for subscription management and request routing.
+* Bankuity API Key (`Authorization`): An access key used for identity verification and access control across specific endpoints.
+
+
+**Warning:** **Security Requirement API keys are private. Always store these keys securely in your backend and never expose them in client-side code or public.**
+
+### 2. Configure Request Headers
+
+Every request made to the Bankuity API must include both keys in the following header format:
+
+| Header Key                  | Value Format              |
+| :-------------------------- | :------------------------ |
+| `Ocp-Apim-Subscription-Key` | `{YOUR_SUBSCRIPTION_KEY}` |
+| `Authorization`             | `{YOUR_API_KEY}`          |
+
+### 3. Verify Connectivity
+
+To ensure your keys are valid and the network path is clear, call the [`/api/ping`](/api-reference/apitransdetails/check-api) endpoint. This is a simple connectivity test that requires no request body. See the code block below for a cURL example:
+
+```cURL
+curl --location --request GET \
+  "https://apisbx.bankuity.com/incomeanalyzer-apiv2/api/ping" \
+  -H "Ocp-Apim-Subscription-Key: {YOUR_SUBSCRIPTION_KEY}" \
+  -H "Authorization: {YOUR_API_KEY}" \
+  -H "Content-Type: application/json"
+```
+
+Review the HTTP status code to confirm your authentication status:
+
+* `200 OK`: Success. Your credentials are valid, and you can proceed to use the analysis endpoints.
+* `401 Unauthorized`: Authentication failed. Re-verify that both the `Ocp-Apim-Subscription-Key` and the `Authorization` headers are correct and have not expired.

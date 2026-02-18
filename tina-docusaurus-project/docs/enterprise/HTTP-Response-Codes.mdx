@@ -1,0 +1,45 @@
+---
+title: HTTP Response Codes
+---
+
+Bankuity APIs use standard HTTP status codes to indicate the outcome of each API request. Allowing client applications to programmatically detect and handle success, client errors, or server-side issues.
+
+* Codes in the [2xx range](#2xx-succes) usually indicate success.
+* Codes in the [4xx range](#4xx-client-errors) indicate an error that occurred based on the information provided (e.g., a missing parameter, etc.).
+* Codes in the [5xx range](#5xx-server-errors) indicate an internal error.
+
+The sections below describes more details about each of the codes.
+
+### 2xx – Success
+
+These codes indicate that the request was received, understood, and successfully processed.
+
+| HTTP Status Code | Message    | Description                                                        |
+| :--------------- | :--------- | :----------------------------------------------------------------- |
+| `200`            | OK         | Request succeeded.                                                 |
+| `201`            | Created    | Resource successfully created (for example, after a POST).         |
+| `204`            | No Content | Request succeeded, no body returned (for example, after a DELETE). |
+
+### 4xx – Client Errors
+
+These codes indicate that the request was invalid or cannot be processed due to a client-side issue.
+
+| HTTP Status Code | Message              | Description                                                                                   |
+| :--------------- | :------------------- | :-------------------------------------------------------------------------------------------- |
+| `400`            | Bad Request          | The request could not be understood or was missing required parameters.                       |
+| `401`            | Unauthorized         | Authentication is required or has failed.                                                     |
+| `403`            | Forbidden            | The request is understood but not allowed.                                                    |
+| `404`            | Not Found            | The requested resource does not exist.                                                        |
+| `409`            | Conflict             | The request could not be completed due to a conflict (for example, duplicate transaction).    |
+| `422`            | Unprocessable Entity | The server understands the content type but was unable to process the contained instructions. |
+
+### 5xx – Server Errors
+
+These codes indicate an error occurred on the Bankuity server while processing the request.
+
+| HTTP Status Code | Message               | Description                                                                        |
+| :--------------- | :-------------------- | :--------------------------------------------------------------------------------- |
+| `500`            | Internal Server Error | An unexpected condition was encountered.                                           |
+| `502`            | Bad Gateway           | Received an invalid response from an upstream server.                              |
+| `503`            | Service Unavailable   | The server is currently unavailable (for example, due to maintenance or overload). |
+| `504`            | Gateway Timeout       | The server did not receive a timely response from an upstream service.             |

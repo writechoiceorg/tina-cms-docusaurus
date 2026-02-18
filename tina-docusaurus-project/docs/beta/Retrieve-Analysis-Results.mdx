@@ -1,0 +1,35 @@
+---
+title: Retrieve Analysis Results
+---
+
+Once an income analysis request has been initiated, you can retrieve the final processed data using the [`/v2/analysis/income/result`](/api-reference/totality/get-analyzing-result-for-customer) endpoint. This method is designed to provide persistent access to the report using the unique `requestId` generated during the initial analysis.
+
+## Pre-requisites
+
+Before getting started, ensure you have the following:
+
+* A valid `requestId` from a previous income analysis request. See [Generate Analysis Report](/guides/generate-analysis) for more details.
+* Your API credentials `Ocp-Apim-Subscription-Key` and `Authorization key`.
+
+## Request the Results
+
+The code block below shows an example request:
+
+```cURL
+curl --location --request GET \
+  "https://apisbx.bankuity.com/incomeanalyzer-apiv2/v2/analysis/income/result?requestId={YOUR_REQUEST_ID}" \
+  -H "Ocp-Apim-Subscription-Key: {YOUR_SUBSCRIPTION_KEY}" \
+  -H "Authorization: {YOUR_API_KEY}" \
+  -H "Content-Type: application/json"
+```
+
+As you can see the query parameter contains the `requestId` generated in the previous step.
+
+### Response
+
+The response body is an object containing several key sections:
+
+* `ProcessingResult`: Contains the core IncomesDataAnalysis object, which details identified income sources (e.g., Payroll, Benefit, Gig income).
+* `RiskAnalysis`: Provides the riskScore and identifies specific `riskBehavior` (Yes/No) detected in the transaction history.
+* `LendingGuide`: Offers data-driven decision support, including suggested `maxLoanAmount` and the optimal `debitDate` to align with the customer's predicted paydays.
+* `HistoricalReports`: A list of previous snapshots for this account, allowing you to track financial changes over time.
