@@ -1,11 +1,14 @@
 
 export default async function middleware(request) {
   const url = new URL(request.url);
-  const pathname = url.pathname;
+  // normalize pathname: remove trailing slashes (keep root as '/')
+  let pathname = url.pathname.replace(/\/+$/g, '');
+  if (pathname === '') pathname = '/';
 
   // allow static asset requests to pass (images, js, css, vite client, etc.)
-  const accept = request.headers.get('accept') || '';
-  const isAsset = !accept.includes('text/html') || /\.(js|css|png|jpg|jpeg|svg|json|ico|map|woff2?)$/.test(pathname);
+  // Rely on pathname patterns rather than Accept header (some requests omit it)
+  const assetExtRe = /\.(?:js|css|png|jpg|jpeg|svg|json|ico|map|woff2?|txt|xml)$/i;
+  const isAsset = assetExtRe.test(pathname) || pathname.startsWith('/_next/') || pathname.startsWith('/static/') || pathname.startsWith('/assets/');
   if (isAsset) return;
 
   // RBAC rules: map path prefixes to required role
@@ -15,8 +18,12 @@ export default async function middleware(request) {
     { prefix: '/admin', role: 'admin' },
   ];
 
+  // allow the auth callback route to be public so it can set cookie for main domain
+  if (pathname === '/_auth/callback' || pathname.startsWith('/_auth/callback')) return;
+
   function requiredRoleFor(path) {
     for (const r of ROLE_MAP) {
+      // match exact prefix or any subpath under it
       if (path === r.prefix || path.startsWith(r.prefix)) return r.role;
     }
     return null; // public
@@ -75,5 +82,6 @@ export default async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/docs/:path*'],
+  // run middleware for all routes (assets are skipped above)
+  matcher: ['/:path*'],
 };

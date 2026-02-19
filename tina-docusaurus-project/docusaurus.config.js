@@ -108,6 +108,10 @@ const config = {
             label: "Enterprise",
           },
           {
+            type: "custom-authButton", // Criaremos esse tipo customizado agora
+            position: "right",
+          },
+          {
             href: "https://github.com/facebook/docusaurus",
             label: "GitHub",
             position: "right",
