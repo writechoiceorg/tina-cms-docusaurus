@@ -45,20 +45,17 @@ db.prepare(
   )`
 ).run();
 
-db.prepare(
-  `CREATE TABLE IF NOT EXISTS revoked_tokens (
-    token TEXT PRIMARY KEY,
-    revoked_at INTEGER
-  )`
-).run();
-
 function seed() {
   const exists = db.prepare('SELECT COUNT(*) as c FROM users').get().c;
   if (exists === 0) {
     const insert = db.prepare('INSERT INTO users (username,password,roles) VALUES (?,?,?)');
-    const adminPass = bcrypt.hashSync('password123', 8);
-    const betaPass = bcrypt.hashSync('bt123', 8);
-    const entPass = bcrypt.hashSync('ent123', 8);
+    
+    // Geração de SALT explícito (10 rounds)
+    const salt = bcrypt.genSaltSync(10);
+    const adminPass = bcrypt.hashSync('password123', salt);
+    const betaPass = bcrypt.hashSync('bt123', salt);
+    const entPass = bcrypt.hashSync('ent123', salt);
+    
     insert.run('admin', adminPass, JSON.stringify(['admin','beta','enterprise']));
     insert.run('betatester', betaPass, JSON.stringify(['beta']));
     insert.run('enterpriseuser', entPass, JSON.stringify(['enterprise']));
@@ -119,9 +116,13 @@ app.post('/api/admin/revoke-user-sessions', requireAdmin, (req, res) => {
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password) return res.status(400).json({ error: 'username+password required' });
+  
   const row = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
   if (!row) return res.status(401).json({ error: 'invalid credentials' });
+  
+  // O bcrypt consegue extrair o salt original gravado no hash do banco automaticamente e checar se bate
   if (!bcrypt.compareSync(password, row.password)) return res.status(401).json({ error: 'invalid credentials' });
+  
   const token = signToken(row);
   res.json({ token });
 });
@@ -155,27 +156,60 @@ app.get('/api/users', requireAdmin, (req, res) => {
 app.post('/api/users', requireAdmin, (req, res) => {
   const { username, password, roles } = req.body || {};
   if (!username || !password) return res.status(400).json({ error: 'username+password required' });
-  const hash = bcrypt.hashSync(password, 8);
+  
+  // Criação segura de Hash com Salt explícito
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
+  
   try {
     const info = db.prepare('INSERT INTO users (username,password,roles) VALUES (?,?,?)').run(username, hash, JSON.stringify(roles || []));
     res.json({ id: info.lastInsertRowid, username, roles: roles || [] });
   } catch (e) {
+    if (e.message.includes('UNIQUE constraint failed')) {
+      return res.status(400).json({ error: 'This username is already taken.' });
+    }
     res.status(400).json({ error: String(e) });
   }
 });
 
 app.put('/api/users/:id', requireAdmin, (req, res) => {
   const { id } = req.params;
-  const { password, roles } = req.body || {};
-  if (!password && !roles) return res.status(400).json({ error: 'nothing to update' });
+  const { username, password, roles } = req.body || {};
+  
+  const updates = [];
+  const values = [];
+
+  if (username) {
+    updates.push('username = ?');
+    values.push(username);
+  }
+
   if (password) {
-    const hash = bcrypt.hashSync(password, 8);
-    db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hash, id);
+    // Nova senha com novo salt
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+    updates.push('password = ?');
+    values.push(hash);
   }
+
   if (roles) {
-    db.prepare('UPDATE users SET roles = ? WHERE id = ?').run(JSON.stringify(roles), id);
+    updates.push('roles = ?');
+    values.push(JSON.stringify(roles));
   }
-  res.json({ ok: true });
+
+  if (updates.length === 0) return res.status(400).json({ error: 'nothing to update' });
+
+  values.push(id); // push the ID for the WHERE clause
+
+  try {
+    db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).run(...values);
+    res.json({ ok: true });
+  } catch (e) {
+    if (e.message.includes('UNIQUE constraint failed')) {
+      return res.status(400).json({ error: 'This username is already taken.' });
+    }
+    res.status(500).json({ error: String(e) });
+  }
 });
 
 app.delete('/api/users/:id', requireAdmin, (req, res) => {
