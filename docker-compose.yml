@@ -1,0 +1,12 @@
+services:
+  bankuity-docs:
+    build: .
+    container_name: bankuity-docs
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PORT=3000
+      - JWT_SECRET=super_secret_bankuity_key_2024

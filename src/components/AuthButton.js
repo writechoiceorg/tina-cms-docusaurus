@@ -6,9 +6,7 @@ export default function AuthButton() {
 
   const handleLogout = async () => {
     await logout(); 
-    // Limpa o cookie forçadamente
     document.cookie = "demo_jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    // Recarrega a página para limpar o estado do Docusaurus
     window.location.href = '/'; 
   };
 
@@ -18,7 +16,6 @@ export default function AuthButton() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         
-        {/* Painel visível apenas para Admins */}
         {isAdmin && (
           <div style={{ 
             display: 'flex', 
@@ -36,7 +33,6 @@ export default function AuthButton() {
           </div>
         )}
         
-        {/* Perfil e Logout (Padrão para todos logados) */}
         <span style={{ 
           fontSize: '14px', 
           fontWeight: 600, 
@@ -52,9 +48,9 @@ export default function AuthButton() {
     );
   }
 
-  // Visão de quem não está logado
   return (
-    <a className="button button--primary button--sm" href="http://localhost:4002/login?next=http://localhost:3000">
+    // CORRIGIDO: Link relativo
+    <a className="button button--primary button--sm" href="/login?next=/">
       Sign In
     </a>
   );

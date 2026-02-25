@@ -1,9 +1,7 @@
-// src/context/AuthContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
 const AuthContext = createContext(null);
 
-// Helper function to parse JWT from cookies
 function getCookie(name) {
   if (typeof document === 'undefined') return null;
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -11,8 +9,6 @@ function getCookie(name) {
   return null;
 }
 
-// Define the access rules. This could be fetched from an API in the future.
-// Based on middleware.js and docusaurus.config.js
 const ACCESS_RULES = {
   '/docs/beta': ['beta', 'admin'],
   '/docs/enterprise': ['enterprise', 'admin'],
@@ -21,15 +17,11 @@ const ACCESS_RULES = {
 
 function hasAccess(roles, path) {
   for (const rulePath in ACCESS_RULES) {
-    // Check if the path is the rule path or a subpath
     if (path.startsWith(rulePath)) {
       const requiredRoles = ACCESS_RULES[rulePath];
-      // Check if user has at least one of the required roles
       return requiredRoles.some(requiredRole => roles.includes(requiredRole));
     }
   }
-  // No specific rule found for this path, allow access for any authenticated user.
-  // Public paths are not checked by this function, they are handled by the UI structure.
   return true;
 }
 
@@ -47,7 +39,8 @@ export function AuthProvider({ children }) {
       }
 
       try {
-        const response = await fetch('http://localhost:4002/api/verify', {
+        // CORRIGIDO: Caminho relativo
+        const response = await fetch('/api/verify', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -56,7 +49,6 @@ export function AuthProvider({ children }) {
           setUser(userData);
           setIsAuthenticated(true);
         } else {
-          // Token is invalid or expired, clear cookie
           document.cookie = 'demo_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
       } catch (error) {
@@ -69,16 +61,17 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = () => {
-    // Redirect to the external login page, preserving the current path
     const redirectUrl = window.location.href;
-    window.location.href = `http://localhost:4002/login?next=${encodeURIComponent(redirectUrl)}`;
+    // CORRIGIDO: Caminho relativo para login
+    window.location.href = `/login?next=${encodeURIComponent(redirectUrl)}`;
   };
 
   const logout = async () => {
     const token = getCookie('demo_jwt');
     try {
       if (token) {
-        await fetch('http://localhost:4002/api/logout', {
+        // CORRIGIDO: Caminho relativo
+        await fetch('/api/logout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token }),
@@ -87,23 +80,20 @@ export function AuthProvider({ children }) {
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
-      // Clear user state and cookie regardless of server result
       setUser(null);
       setIsAuthenticated(false);
       document.cookie = 'demo_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-      // Optional: redirect to home page after logout
       window.location.href = '/';
     }
   };
 
   const canAccessPath = (path) => {
-    if (!path) return true; // Assume accessible if no path provided
+    if (!path) return true;
     if (!isAuthenticated) return false;
     const userRoles = user?.roles || [];
     return hasAccess(userRoles, path);
   };
   
-  // This is a more specific check for the navbar items which are not paths
   const canAccessSidebar = (sidebarId) => {
     if (!isAuthenticated) return false;
     const userRoles = user?.roles || [];
@@ -113,7 +103,6 @@ export function AuthProvider({ children }) {
     if (sidebarId === 'clientSidebar') {
         return userRoles.includes('enterprise') || userRoles.includes('admin');
     }
-    // Default allow for other sidebars like 'publicSidebar'
     return true;
   }
 

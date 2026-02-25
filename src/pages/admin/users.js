@@ -22,7 +22,8 @@ export default function AdminUsers() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:4002/api/users', {
+      // CORRIGIDO: Caminho relativo
+      const res = await fetch('/api/users', {
         headers: { authorization: 'Bearer ' + getToken() }
       });
       if (!res.ok) throw new Error('Failed to load users. Please verify your administrator privileges.');
@@ -41,7 +42,8 @@ export default function AdminUsers() {
   async function revokeSessions(username) {
     if (!confirm(`Are you sure you want to revoke all active sessions for "${username}"?`)) return;
     try {
-      const res = await fetch('http://127.0.0.1:4002/api/admin/revoke-user-sessions', {
+      // CORRIGIDO: Caminho relativo
+      const res = await fetch('/api/admin/revoke-user-sessions', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json', 
@@ -57,7 +59,8 @@ export default function AdminUsers() {
   async function delUser(id) {
     if (!confirm('Are you sure you want to permanently delete this user? This action cannot be undone.')) return;
     try {
-      const res = await fetch('http://127.0.0.1:4002/api/users/' + id, {
+      // CORRIGIDO: Caminho relativo
+      const res = await fetch('/api/users/' + id, {
         method: 'DELETE',
         headers: { authorization: 'Bearer ' + getToken() }
       });
@@ -70,17 +73,16 @@ export default function AdminUsers() {
     e.preventDefault();
     try {
       const isNew = formData.id === 'new';
-      const url = isNew ? 'http://127.0.0.1:4002/api/users' : `http://127.0.0.1:4002/api/users/${formData.id}`;
+      // CORRIGIDO: Caminho relativo
+      const url = isNew ? '/api/users' : `/api/users/${formData.id}`;
       const method = isNew ? 'POST' : 'PUT';
 
-      // Convert comma-separated string to a clean array
       const rolesArray = formData.roles.split(',').map(r => r.trim()).filter(Boolean);
 
       const payload = {
         roles: rolesArray,
       };
       
-      // Only send username and password if filled
       if (formData.username && isNew) payload.username = formData.username;
       if (formData.password) payload.password = formData.password;
 
