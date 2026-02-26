@@ -13,7 +13,8 @@ flowchart TD
     end
 
     subgraph Docker ["Docker Container (Azure App Service)"]
-        EXP{"Express.js Server\n(Proxy & Auth)"}
+        EXP{"Express.js Server 
+        (Proxy & Auth)"}
         DB[("SQLite Database\n(Users & Roles)")]
         DOCS[["Docusaurus\n(Static Build)"]]
     end
