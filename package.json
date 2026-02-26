@@ -1,26 +1,21 @@
 {
-  "name": "tina-docusaurus-project",
+  "name": "decap-docusaurus-project",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "tinacms dev -c \"docusaurus start\"",
-    "dev:auth": "node server/server.js",
-    "dev:all": "concurrently -k \"npm run dev\" \"npm run dev:auth\"",
-    "docusaurus": "docusaurus",
-    "start": "docusaurus start",
+    "dev": "concurrently -k \"npm run docusaurus:start\" \"npm run dev:auth\"",
+    "docusaurus:start": "docusaurus start",
+    "dev:auth": "node --env-file=.env server/server.js",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
-    "write-translations": "docusaurus write-translations",
-    "write-heading-ids": "docusaurus write-heading-ids"
+    "serve": "docusaurus serve"
   },
   "dependencies": {
     "@docusaurus/core": "3.9.2",
     "@docusaurus/preset-classic": "3.9.2",
     "@mdx-js/react": "^3.0.0",
-    "@tinacms/cli": "^2.1.5",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.6.2",
     "body-parser": "^2.2.2",
@@ -31,8 +26,7 @@
     "jsonwebtoken": "^9.0.3",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tinacms": "^3.4.1"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.9.2",

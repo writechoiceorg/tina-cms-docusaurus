@@ -7,6 +7,5 @@ services:
       - "3000:3000"
     volumes:
       - ./data:/app/data
-    environment:
-      - PORT=3000
-      - JWT_SECRET=super_secret_bankuity_key_2024
+    env_file:
+      - .env
