@@ -125,9 +125,14 @@ Once the server is running, you can access the following routes:
 - **Public Site:** [http://localhost:3000](http://localhost:3000)
 - **CMS Admin Panel:** [http://localhost:3000/admin](http://localhost:3000/admin)
 
-### Default Admin Credentials
-The SQLite database will automatically seed a default admin user on the first run. You need this to access the `/admin` route before authenticating with GitHub.
+### Credentials (Seed Data)
 
-- **Username:** `admin`
-- **Password:** `password123`
+Upon the first execution, the SQLite database is automatically seeded with the following default users:
 
+| Username         | Password      | Roles (Access Level)           |
+| :---             | :---          | :---                           |
+| `admin`          | `password123` | `admin`, `beta`, `enterprise`  |
+| `betatester`     | `bt123`       | `beta`                         |
+| `enterpriseuser` | `ent123`      | `enterprise`                   |
+
+You can also edit users and roles on the admin panel.
