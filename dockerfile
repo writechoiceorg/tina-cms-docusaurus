@@ -1,8 +1,8 @@
-# Estágio 1: Construção do Frontend (Docusaurus)
+# Docusaurus
 FROM node:20-bullseye-slim AS builder
 WORKDIR /app
 
-# Instala ferramentas básicas de build
+# Build
 RUN apt-get update && apt-get install -y python3 make g++
 
 COPY package*.json ./
@@ -10,17 +10,16 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
-# Node params para evitar falta de memória no build
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN npm run build
 
-# Estágio 2: Servidor de Produção
+# Server
 FROM node:20-bullseye-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Instala dependências para compilar o SQLite (better-sqlite3) no boot
+# Deps
 RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
@@ -31,5 +30,6 @@ COPY --from=builder /app/build ./build
 
 RUN mkdir -p /app/data
 
+# Run auth server
 EXPOSE 3000
 CMD ["node", "server/server.js"]
