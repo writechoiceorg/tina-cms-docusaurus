@@ -1,0 +1,58 @@
+backend:
+  name: github
+  repo: writechoiceorg/tina-cms-docusaurus
+  branch: dev
+  # A URL base do seu servidor. Opcional no local, mas necessário na Azure.
+  # Deixe vazio se quiser que ele herde a url atual automaticamente.
+  base_url: "http://localhost:3000"
+  auth_endpoint: /api/auth/github
+
+# Ativa a funcionalidade de Rascunho (cria Pull Requests no GitHub)
+publish_mode: editorial_workflow
+
+media_folder: "static/img"
+public_folder: "/img"
+
+collections:
+  - name: "public"
+    label: "Public Docs"
+    folder: "docs/public"
+    create: true
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: "beta"
+    label: "Beta Docs"
+    folder: "docs/beta"
+    create: true
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: "enterprise"
+    label: "Enterprise Docs"
+    folder: "docs/enterprise"
+    create: true
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: "blog"
+    label: "Blog"
+    folder: "blog"
+    create: true
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Authors", name: "authors", widget: "list", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Body", name: "body", widget: "markdown" }

@@ -1,0 +1,11 @@
+services:
+  bankuity-docs:
+    build: .
+    container_name: bankuity-docs
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
