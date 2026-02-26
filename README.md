@@ -15,16 +15,20 @@ flowchart TD
     subgraph Docker ["Docker Container (Azure App Service)"]
         EXP{"Express.js Server 
         (Proxy & Auth)"}
-        DB[("SQLite Database\n(Users & Roles)")]
-        DOCS[["Docusaurus\n(Static Build)"]]
+        DB[("SQLite Database
+        (Users & Roles)")]
+        DOCS[["Docusaurus
+        (Static Build)"]]
     end
 
     subgraph External ["External Services"]
-        GH(("GitHub\n(Repo & OAuth)"))
+        GH(("GitHub
+        (Repo & OAuth)"))
     end
 
     %% Standard User Flow
-    PU -- "1. Requests route\n(/docs/beta)" --> EXP
+    PU -- "1. Requests route
+    (/docs/beta)" --> EXP
     EXP -- "2. Validates JWT & Roles" --> DB
     EXP -- "3. Serves Static Files" --> DOCS
 
@@ -34,14 +38,17 @@ flowchart TD
     
     %% OAuth Flow
     CMS -- "Requests GitHub Login" --> EXP
-    EXP <--> |"OAuth Handshake\n(Client ID / Secret)"| GH
+    EXP <--> |"OAuth Handshake
+    (Client ID / Secret)"| GH
     EXP -- "Returns Access Token" --> CMS
 
     %% Content Editing Flow
-    CMS -- "Saves Content\n(Direct Commit/PR)" --> GH
+    CMS -- "Saves Content
+    (Direct Commit/PR)" --> GH
 
     %% CI/CD Webhook Flow
-    GH -- "Triggers Webhook\n(On Push)" --> EXP
+    GH -- "Triggers Webhook
+    (On Push)" --> EXP
     EXP -. "git pull & rebuild" .-> DOCS
 
     %% Styling
