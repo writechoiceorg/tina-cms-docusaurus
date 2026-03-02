@@ -1,13 +1,10 @@
 backend:
   name: github
   repo: writechoiceorg/tina-cms-docusaurus
-  branch: dev
-  # A URL base do seu servidor. Opcional no local, mas necessário na Azure.
-  # Deixe vazio se quiser que ele herde a url atual automaticamente.
+  branch: __GITHUB_BRANCH__
   base_url: "http://localhost:3000"
   auth_endpoint: /api/auth/github
 
-# Ativa a funcionalidade de Rascunho (cria Pull Requests no GitHub)
 publish_mode: editorial_workflow
 
 media_folder: "static/img"
